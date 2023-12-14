@@ -1,137 +1,40 @@
 # Real-Time Neural Light Field on Mobile Devices
 
 
-This work is an extension of the following work
+This work is an extension of the following work named `MobileR2L`
 ### [Project](https://snap-research.github.io/MobileR2L/) | [ArXiv](https://arxiv.org/abs/2212.08057) | [PDF](https://arxiv.org/pdf/2212.08057.pdf) 
 
-<!-- <div align="center">
-    <a><img src="figs/snap.svg"  height="120px" ></a>
-   
-</div>
-
-This repository is for the real-time neural rendering introduced in the following CVPR'23 paper:
-> **[Real-Time Neural Light Field on Mobile Devices](https://snap-research.github.io/MobileR2L/)** \
-> Junli Cao <sup>1</sup>, [Huan Wang](http://huanwang.tech/) <sup>2</sup>, Pavlo Chemerys<sup>1</sup>, Vladislav Shakhrai<sup>1</sup>, Ju Hu<sup>1</sup>,  [Yun Fu](http://www1.ece.neu.edu/~yunfu/) <sup>2</sup>, Denys Makoviichuk<sup>1</sup>,  [Sergey Tulyakov](http://www.stulyakov.com/) <sup>1</sup>, [Jian Ren](https://alanspike.github.io/) <sup>1</sup> 
->
-> <sup>1</sup> Snap Inc. <sup>2</sup> Northeastern University  -->
 
 
 
-<details>
-  <summary>
-  <font size="+1">Abstract</font>
-  </summary>
+
+# Abstract
+
 We have setup the complex pipeline of NGP_PL and MobileR2L on our systems. Furthermore we have also setup an iterative pruning pipeline to prune the NeRF model. 
 
-</details>
-
-# Knowledge Distillation
-
-
-<!-- <div align="center">
-<img src="figs/Lego-Tracking.gif" width="200" height="400" />
-<img src="figs/blue-.gif" width="200" height="400" />
-<img src="figs/shoe_1.gif" width="200" height="400" />
-</div> -->
-
-# Update
-- [x] 09/13/2023: we released the tutorial of building your own lens by utilizing [SnapML](https://docs.snap.com/lens-studio/references/guides/lens-features/machine-learning/ml-overview) and [Lens Studio](https://ar.snap.com/lens-studio-dl?utm_source=GoogleSEM&utm_medium=PAIDPLATFORM&utm_campaign=LensStudio_Brand_P0&utm_term=AR_ProductiveInnovators_CareerArtists&utm_content=LS_ProductPage&gclid=CjwKCAjwu4WoBhBkEiwAojNdXmCEiYGlvPgN1YQGTyUaCReBgasW66baB418jGOzlyql1W3eprR7fhoChuwQAvD_BwE). Check it out [here](https://github.com/Snapchat/snapml-templates/tree/main/Neural%20Rendering)! 
-
-# Overview
-This repo contains the codebases for both the teacher and student models. We use the public repo [ngp_pl](https://github.com/kwea123/ngp_pl) as the teacher for more efficient pseudo data distillation(instead of NeRF and MipNeRF as discussed in the paper).
-
-Observed differences between `ngp` and `NeRF` teacher:
-1. the training with `ngp_pl` should be less than 15 mins with 4 GPUs and pseudo data distillation for 10k images is less than 2 hours with single GPU. 
-2. `ngp` renders high quality synthetic scenes than `NeRF`
-3. no space contraction techniques were employed in `ngp`, thus having a inferior performance on real-world scenes
-
-# Installation
-`conda` virtual environment is recommended. The experiments were conducted on 4 Nvidia V100 GPUs. Training on one GPU should work but takes longer to converge.
-## MobileR2L
-
-```
-git clone https://github.com/snap-research/MobileR2L.git
-
-cd MobileR2L
-
-conda create -n r2l python==3.9
-conda activate r2l
-conda install pip
-
-pip install torch torchvision torchaudio
-pip install -r requirements.txt 
-
-conda deactivate
-```
-
-## NGP_PL
-```
-cd model/teacher/ngp_pl
-
-# create the conda env
-conda create -n ngp_pl python==3.9
-conda activate ngp_pl
-conda install pip
-
-# install torch with cuda 116
-pip install torch==1.13.1+cu116 torchvision==0.14.1+cu116 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu116
-
-# install tiny-cuda-nn
-pip install git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch
-
-# install torch scatter
-pip install torch-scatter -f https://data.pyg.org/whl/torch-1.13.0+${cu116}.html
-
-# ---install apex---
-git clone https://github.com/NVIDIA/apex
-cd apex
-# denpency for apex
-pip install packaging
-
-## if pip >= 23.1 (ref: https://pip.pypa.io/en/stable/news/#v23-1) which supports multiple `--config-settings` with the same key... 
-pip install -v --disable-pip-version-check --no-cache-dir --no-build-isolation --config-settings "--build-option=--cpp_ext" --config-settings "--build-option=--cuda_ext" ./
-## otherwise
-# pip install -v --disable-pip-version-check --no-cache-dir --no-build-isolation --global-option="--cpp_ext" --global-option="--cuda_ext" ./
-# ---end installing apex---
-
-
-cd ../
-# install other requirements
-pip install -r requirements.txt
-
-# build
-pip install models/csrc/
-
-# go to root
-cd ../../../
-```
 
 # Dataset
-Download the example data: `lego` and `fern`
+Download the example data: `lego`
 ```
 sh script/download_example_data.sh
 ```
 
-# Training the Teacher
+# Knowledge Distillation
 
-```
-cd model/teacher/ngp_pl
+For this part, we require `TinyCudaNN` which requires a running GPU instance and thus we setup and ran this part on a AWS instance. Refer the original `MobileR2L` github for details on how to set this up.
 
-export ROOT_DIR=../../../dataset/nerf_synthetic/
-python3 train.py \
-     --root_dir $ROOT_DIR/lego \
-     --exp_name lego\
-     --num_epochs 30 --batch_size 16384 --lr 2e-2 --eval_lpips --num_gpu 4 
-```
-or running the bash script
-```
-sh benchmarking/benchmark_synthetic_nerf.sh lego
-```
+This part creates pseudo images from the teacher model which the student then uses to do imitation learning.
 
-Once we have the teacher trained(checkpoints saved already), we can start to generate the pseudo data for MobileR2L. Depending your disk storage, the number of pseudo images could range from 2,000 to 10,000(performance varies!). Here, we set the number to 5000.
+To do this, you need to first setup  `NGP_PL`
+Then you need to download the dataset.
 
+Create pseudo images by going into the `ngp_pl` folder. 
+Download the teacher checkpoint from the `'ngp_pl` [github](https://github.com/kwea123/ngp_pl).
+
+
+Run the following, this allows us to create 5k images from the trained teacher model,it takes in the weights for the trained teacher model and you can specify the number of GPUs
 ```
-export ROOT_DIR=../../../dataset/nerf_synthetic/
+export ROOT_DIR=dataset/nerf_synthetic/
 python3 train.py \
     --root_dir $ROOT_DIR/lego \
     --exp_name Lego_Pseudo  \
@@ -139,35 +42,78 @@ python3 train.py \
     --n_pseudo_data 5000 --weight_path ckpts/nerf/lego/epoch=29_slim.ckpt \
     --save_pseudo_path Pseudo/lego --num_gpu 1
 ```
-or running the bash script
+
+# Training the Student
+
+To do this we switch to `MobileR2L` and run the following
 
 ```
-sh benchmarking/distill_nerf.sh lego
+nGPU=1
+scene=lego
+
+python3 -m torch.distributed.launch --nproc_per_node=$nGPU --use_env main.py \
+    --project_name $scene \
+    --dataset_type Blender \
+    --pseudo_dir model/teacher/ngp_pl/Pseudo/$scene  \
+    --root_dir dataset/nerf_synthetic \
+    --run_train \
+    --num_workers 12 \
+    --batch_size 10 \
+    --num_iters 300000 \
+    --input_height 100 \
+    --input_width 100 \
+    --output_height 800 \
+    --output_width 800 \
+    --scene $scene \
+    --i_testset 10000 \
+    --amp \
+    --lrate 0.0005 \
+    --i_weights 100
 ```
 
-# Training MobileR2L
+This allows us to train the student on the pseudo generated data, we can set the `batch_size`, `num_iteration`,` lrate` etc. The parameters `i_weights` and `i_testset` are critical for saving the model checkpoint after the set amount of iterations.
 
+# Iterative Pruning.
+
+Here we prune the model globally by using L! Policy.
+The code for this is written in  `prune.py`. 
+This code expects a `ckpt.tar` from the trained student model,
+It prunes the entire model by a set amount and we can change this amount.
+It also makes the pruning permanent and saved the pruned model as `ckpt_pruned.tar`
+
+Go through the simple code of pruning and run `python3 pruning.py` accordinlgy.
+
+Once we get the pruned model, we want to finetune it and thus we again resort to training the student model script.
+
+Run 
 ```
-# go to the MobileR2L directory
-cd ../../../MobileR2L
+nGPU=1
+scene=lego
 
-conda activate r2l
-
-# use 4 gpus for training: NeRF
-sh script/benchmarking_nerf.sh 4 lego
-
-# use 4 gpus for training: LLFF
-sh script/benchmarking_llff.sh 4 orchids
-
+python3 -m torch.distributed.launch --nproc_per_node=$nGPU --use_env main.py \
+    --project_name $scene \
+    --dataset_type Blender \
+    --pseudo_dir model/teacher/ngp_pl/Pseudo/$scene  \
+    --root_dir dataset/nerf_synthetic \
+    --run_train \
+    --num_workers 12 \
+    --batch_size 10 \
+    --ckpt_dir ckpt_pruned.tar \
+    --num_iters 50000 \
+    --input_height 100 \
+    --input_width 100 \
+    --output_height 800 \
+    --output_width 800 \
+    --scene $scene \
+    --i_testset 10000 \
+    --amp \
+    --lrate 5e-6 \
+    --i_weights 100
 ```
-The model will be running a day or two depending on you GPUs. When the model converges, it will automatically export the onnx files to the `Experiment/Lego_**` folder. There should be three onnx files: `Sampler.onnx`, `Embedder.onnx` and `*_SnapGELU.onnx`.
 
-Alternatively, you can export the onnx manully by running the flowing script with `--ckpt_dir` replaced by the trained model:
+Here the notable changes are the addition of the `ckpt_dir` flag. This allows us to give a pretrained network for finetuning. We reduce the `num_iters` to `50000` and also decrease the learning rate to `5e-6`. This is standard for finetuning purposes.
 
-```
-sh script/export_onnx_nerf.sh lego path/to/ckpt
-
-```
+We did this 3 times in iteration and have reported our result in the report.
 
 
 # Reference
