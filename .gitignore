@@ -24,7 +24,9 @@ tutorial.ipynb
 ckpts/
 logs/
 results/
+archive/
 *.mp4
+*.ckpt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

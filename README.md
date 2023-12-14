@@ -1,9 +1,10 @@
 # Real-Time Neural Light Field on Mobile Devices
 
 
+This work is an extension of the following work
 ### [Project](https://snap-research.github.io/MobileR2L/) | [ArXiv](https://arxiv.org/abs/2212.08057) | [PDF](https://arxiv.org/pdf/2212.08057.pdf) 
 
-<div align="center">
+<!-- <div align="center">
     <a><img src="figs/snap.svg"  height="120px" ></a>
    
 </div>
@@ -12,7 +13,7 @@ This repository is for the real-time neural rendering introduced in the followin
 > **[Real-Time Neural Light Field on Mobile Devices](https://snap-research.github.io/MobileR2L/)** \
 > Junli Cao <sup>1</sup>, [Huan Wang](http://huanwang.tech/) <sup>2</sup>, Pavlo Chemerys<sup>1</sup>, Vladislav Shakhrai<sup>1</sup>, Ju Hu<sup>1</sup>,  [Yun Fu](http://www1.ece.neu.edu/~yunfu/) <sup>2</sup>, Denys Makoviichuk<sup>1</sup>,  [Sergey Tulyakov](http://www.stulyakov.com/) <sup>1</sup>, [Jian Ren](https://alanspike.github.io/) <sup>1</sup> 
 >
-> <sup>1</sup> Snap Inc. <sup>2</sup> Northeastern University 
+> <sup>1</sup> Snap Inc. <sup>2</sup> Northeastern University  -->
 
 
 
@@ -20,17 +21,18 @@ This repository is for the real-time neural rendering introduced in the followin
   <summary>
   <font size="+1">Abstract</font>
   </summary>
-
-Recent efforts in Neural Rendering Fields (NeRF) have shown impressive results on novel view synthesis by utilizing implicit neural representation to represent 3D scenes. Due to the process of volumetric rendering, the inference speed for NeRF is extremely slow, limiting the application scenarios of utilizing NeRF on resource-constrained hardware, such as mobile devices. Many works have been conducted to reduce the latency of running NeRF models. However, most of them still require high-end GPU for acceleration or extra storage memory, which is all unavailable on mobile devices. Another emerging direction utilizes the neural light field (NeLF) for speedup, as only one forward pass is performed on a ray to predict the pixel color. Nevertheless, to reach a similar rendering quality as NeRF, the network in NeLF is designed with intensive computation, which is not mobile-friendly. In this work, we propose an efficient network that runs in real-time on mobile devices for neural rendering. We follow the setting of NeLF to train our network. Unlike existing works, we introduce a novel network architecture that runs efficiently on mobile devices with low latency and small size, i.e., saving 15x ~ 24x storage compared with MobileNeRF. Our model achieves high-resolution generation while maintaining real-time inference for both synthetic and real-world scenes on mobile devices, e.g., 18.04ms (iPhone 13) for rendering one 1008x756 image of real 3D scenes. Additionally, we achieve similar image quality as NeRF and better quality than MobileNeRF (PSNR 26.15 vs. 25.91 on the real-world forward-facing dataset)
+We have setup the complex pipeline of NGP_PL and MobileR2L on our systems. Furthermore we have also setup an iterative pruning pipeline to prune the NeRF model. 
 
 </details>
 
+# Knowledge Distillation
 
-<div align="center">
+
+<!-- <div align="center">
 <img src="figs/Lego-Tracking.gif" width="200" height="400" />
 <img src="figs/blue-.gif" width="200" height="400" />
 <img src="figs/shoe_1.gif" width="200" height="400" />
-</div>
+</div> -->
 
 # Update
 - [x] 09/13/2023: we released the tutorial of building your own lens by utilizing [SnapML](https://docs.snap.com/lens-studio/references/guides/lens-features/machine-learning/ml-overview) and [Lens Studio](https://ar.snap.com/lens-studio-dl?utm_source=GoogleSEM&utm_medium=PAIDPLATFORM&utm_campaign=LensStudio_Brand_P0&utm_term=AR_ProductiveInnovators_CareerArtists&utm_content=LS_ProductPage&gclid=CjwKCAjwu4WoBhBkEiwAojNdXmCEiYGlvPgN1YQGTyUaCReBgasW66baB418jGOzlyql1W3eprR7fhoChuwQAvD_BwE). Check it out [here](https://github.com/Snapchat/snapml-templates/tree/main/Neural%20Rendering)! 
@@ -167,31 +169,10 @@ sh script/export_onnx_nerf.sh lego path/to/ckpt
 
 ```
 
-# Run AR lens in Snapchat
-We provide the snapcodes for the AR lens in Snapchat. Scan it with Snapchat and try it out! Note: full-resolution lens need iPhone 13 or above to run smoothly in Snapchat. Try to reduce to a smaller resolution for other phones.
-
-<div align="center">
-<img src="figs/Lego.png" width="200" height="200" />
-<img src="figs/Hotdog.png" width="200" height="200" />
-<img src="figs/Mic.png" width="200" height="200" />
-</div>
-<div align="center">
-<img src="figs/Hotdog-surface.png" width="200" height="200" />
-<img src="figs/lego-surface.png" width="200" height="200" />
-<img src="figs/mic-surface.png" width="200" height="200" />
-</div>
-
-# Future Plan
-We are working on releasing a tutorial on how to utilize our method to create your own AR assets and lens that is fully compatiable with [SnapML](https://docs.snap.com/lens-studio/references/guides/lens-features/machine-learning/ml-overview). 
-
-
-# Acknowledgement
-
-In this code we refer to the following implementations: [nerf-pytorch](https://github.com/yenchenlin/nerf-pytorch), [R2L](https://github.com/snap-research/R2L) and [ngp_pl](https://github.com/kwea123/ngp_pl). We also refer to some great implementation from [torch-ngp](https://github.com/ashawkey/torch-ngp/tree/main) and [MipNeRF](https://github.com/google-research/multinerf/blob/main/internal/camera_utils.py#L144). Great thanks to them! Our code is largely built upon their wonderful implementation.  We also greatly thank the anounymous CVPR'23 reviewers for the constructive comments to help us improve the paper.
 
 # Reference
 
-If our work or code helps you, please consider to cite our paper. Thank you!
+Huge Thank you to 
 ```BibTeX
 @inproceedings{cao2023real,
   title={Real-Time Neural Light Field on Mobile Devices},

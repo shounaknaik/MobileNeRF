@@ -68,72 +68,117 @@ model = R2L(
         )
 
 
-
-# load data    
-# dataset_info = select_and_load_dataset(
-#     basedir=join(root_dir, scene),
-#     dataset_type=dataset_type,
-#     input_height=input_height,
-#     input_width=input_width,
-#     output_height=output_height,
-#     output_width=output_width,
-#     scene=scene,
-#     test_skip=test_skip,
-#     factor=factor,
-#     bd_factor=bd_factor,
-#     llffhold=llffhold,
-#     ff=ff,
-#     use_sr_module=use_sr_module,
-#     camera_convention=camera_convention,
-#     ndc=ndc,
-#     device=device,
-#     n_sample_per_ray= n_sample_per_ray
-# )
-
 # Load the pre-trained model
 checkpoint = torch.load("./ckpt.tar")
 
-
-# model = R2LEngine(dataset_info=dataset_info, logger=None, args=None)  # Instantiate your model
 model.load_state_dict(checkpoint["network_fn_state_dict"])
 model.eval()
 
-print(model)
+def remove_char_at_index(input_str, index):
+    if 0 <= index < len(input_str):
+        return input_str[:index] + input_str[index + 1:]
+    else:
+        return "Index out of range"
+
+def convert_to_code_form(name):
+    name= f"model.{name}"
+    split_name = name.split('.')[:-1]
+    new_name=[]
+    for ch in split_name:
+
+        
+        if ch.isdigit():
+            new_ch = f"[{ch}]"
+            new_name.append(new_ch)
+        else:
+            new_name.append(ch)
+    new_string = '.'.join(new_name)
+
+    indices=[]
+    for i,c in enumerate(new_string):
+        if c=="[":
+            indices.append(i-1)
+
+    offset=0
+    for idx in indices:
+        new_string=remove_char_at_index(new_string,idx-offset)
+        offset+=1
+
+    return new_string
+
+
 parameters_to_prune = ()
 for name,param in model.named_parameters():
-    # print(name)
 
-    if name.split('.')[-1] == 'weight':
-        parameters_to_prune += ((name,"weight"),)
+    wanted_name = convert_to_code_form(name)
+
+    if name.split('.')[-1]=='weight':
+        parameters_to_prune+=((wanted_name,'weight'),)
 
 
 
-# print(parameters_to_prune)
-# print(model.head.0)
-parameters_to_prune = (
-    (getattr(model.head,'0'), 'weight'),
-    (getattr(model.body,'1').conv_block[0],'weight')
-    
-)
+
+parameters_to_prune=((model.head[0], 'weight'), (model.body[0].conv_block[0], 'weight'), 
+(model.body[0].conv_block[1], 'weight'), (model.body[0].conv_block[3], 'weight'), (model.body[0].conv_block[4], 'weight'), 
+(model.body[1].conv_block[0], 'weight'), (model.body[1].conv_block[1], 'weight'), (model.body[1].conv_block[3], 'weight'), 
+(model.body[1].conv_block[4], 'weight'), (model.body[2].conv_block[0], 'weight'), (model.body[2].conv_block[1], 'weight'), 
+(model.body[2].conv_block[3], 'weight'), (model.body[2].conv_block[4], 'weight'), (model.body[3].conv_block[0], 'weight'), 
+(model.body[3].conv_block[1], 'weight'), (model.body[3].conv_block[3], 'weight'), (model.body[3].conv_block[4], 'weight'), 
+(model.body[4].conv_block[0], 'weight'), (model.body[4].conv_block[1], 'weight'), (model.body[4].conv_block[3], 'weight'), 
+(model.body[4].conv_block[4], 'weight'), (model.body[5].conv_block[0], 'weight'), (model.body[5].conv_block[1], 'weight'), 
+(model.body[5].conv_block[3], 'weight'), (model.body[5].conv_block[4], 'weight'), (model.body[6].conv_block[0], 'weight'), 
+(model.body[6].conv_block[1], 'weight'), (model.body[6].conv_block[3], 'weight'), (model.body[6].conv_block[4], 'weight'), 
+(model.body[7].conv_block[0], 'weight'), (model.body[7].conv_block[1], 'weight'), (model.body[7].conv_block[3], 'weight'), 
+(model.body[7].conv_block[4], 'weight'), (model.body[8].conv_block[0], 'weight'), (model.body[8].conv_block[1], 'weight'), 
+(model.body[8].conv_block[3], 'weight'), (model.body[8].conv_block[4], 'weight'), (model.body[9].conv_block[0], 'weight'), 
+(model.body[9].conv_block[1], 'weight'), (model.body[9].conv_block[3], 'weight'), (model.body[9].conv_block[4], 'weight'),
+(model.body[10].conv_block[0], 'weight'), (model.body[10].conv_block[1], 'weight'), (model.body[10].conv_block[3], 'weight'), 
+(model.body[10].conv_block[4], 'weight'), (model.body[11].conv_block[0], 'weight'), (model.body[11].conv_block[1], 'weight'),
+(model.body[11].conv_block[3], 'weight'), (model.body[11].conv_block[4], 'weight'), (model.body[12].conv_block[0], 'weight'), 
+(model.body[12].conv_block[1], 'weight'), (model.body[12].conv_block[3], 'weight'), (model.body[12].conv_block[4], 'weight'), 
+(model.body[13].conv_block[0], 'weight'), (model.body[13].conv_block[1], 'weight'), (model.body[13].conv_block[3], 'weight'), 
+(model.body[13].conv_block[4], 'weight'), (model.body[14].conv_block[0], 'weight'), (model.body[14].conv_block[1], 'weight'), 
+(model.body[14].conv_block[3], 'weight'), (model.body[14].conv_block[4], 'weight'), (model.body[15].conv_block[0], 'weight'), 
+(model.body[15].conv_block[1], 'weight'), (model.body[15].conv_block[3], 'weight'), (model.body[15].conv_block[4], 'weight'), 
+(model.body[16].conv_block[0], 'weight'), (model.body[16].conv_block[1], 'weight'), (model.body[16].conv_block[3], 'weight'), 
+(model.body[16].conv_block[4], 'weight'), (model.body[17].conv_block[0], 'weight'), (model.body[17].conv_block[1], 'weight'), 
+(model.body[17].conv_block[3], 'weight'), (model.body[17].conv_block[4], 'weight'), (model.body[18].conv_block[0], 'weight'),
+(model.body[18].conv_block[1], 'weight'), (model.body[18].conv_block[3], 'weight'), (model.body[18].conv_block[4], 'weight'), 
+(model.body[19].conv_block[0], 'weight'), (model.body[19].conv_block[1], 'weight'), (model.body[19].conv_block[3], 'weight'), 
+(model.body[19].conv_block[4], 'weight'), (model.body[20].conv_block[0], 'weight'), (model.body[20].conv_block[1], 'weight'), 
+(model.body[20].conv_block[3], 'weight'), (model.body[20].conv_block[4], 'weight'), (model.body[21].conv_block[0], 'weight'), 
+(model.body[21].conv_block[1], 'weight'), (model.body[21].conv_block[3], 'weight'), (model.body[21].conv_block[4], 'weight'), 
+(model.body[22].conv_block[0], 'weight'), (model.body[22].conv_block[1], 'weight'), (model.body[22].conv_block[3], 'weight'), 
+(model.body[22].conv_block[4], 'weight'), (model.body[23].conv_block[0], 'weight'), (model.body[23].conv_block[1], 'weight'),
+(model.body[23].conv_block[3], 'weight'), (model.body[23].conv_block[4], 'weight'), (model.body[24].conv_block[0], 'weight'), 
+(model.body[24].conv_block[1], 'weight'), (model.body[24].conv_block[3], 'weight'), (model.body[24].conv_block[4], 'weight'), 
+(model.body[25].conv_block[0], 'weight'), (model.body[25].conv_block[1], 'weight'), (model.body[25].conv_block[3], 'weight'),
+(model.body[25].conv_block[4], 'weight'), (model.body[26].conv_block[0], 'weight'), (model.body[26].conv_block[1], 'weight'), 
+(model.body[26].conv_block[3], 'weight'), (model.body[26].conv_block[4], 'weight'), (model.body[27].conv_block[0], 'weight'), 
+(model.body[27].conv_block[1], 'weight'), (model.body[27].conv_block[3], 'weight'), (model.body[27].conv_block[4], 'weight'), 
+(model.body[28].conv_block[0], 'weight'), (model.body[28].conv_block[1], 'weight'), (model.body[28].conv_block[3], 'weight'))
+
+
+
 
 
 print('Before Pruning')
-print(model.head[0].weight)
+# print(model.head[0].weight)
 
 
 
 prune.global_unstructured(
     parameters_to_prune,
     pruning_method=prune.L1Unstructured,
-    amount=0.2,
+    amount=0.3,
 )
 
-# prune.remove(parameters_to_prune[0],'weight')
-# prune.remove(parameters_to_prune[1],'weight')
-print('After Pruning')
-print(model.head[0].weight)
 
-# print(list(model.head[0].named_parameters()))
+for idx in range(len(parameters_to_prune)):
+    prune.remove(parameters_to_prune[idx][0],'weight')
+
+print('After Pruning')
+
 
 checkpoint["network_fn_state_dict"] = model.state_dict()
 torch.save(checkpoint,'ckpt_pruned.tar')
