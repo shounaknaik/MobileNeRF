@@ -4,6 +4,9 @@
 
 https://github.com/shounaknaik/MobileNeRF/assets/55713396/b8d1ddcc-da64-47d1-91a1-9dc0f06a2a2e
 
+This is a screen recording from the iPad.  
+The bulldozer is a Snapchat Nerf object inferencing real time as we change the pose of the iPad camera.
+
 This work is an extension of the following work named `MobileR2L`
 ### [Project](https://snap-research.github.io/MobileR2L/) | [ArXiv](https://arxiv.org/abs/2212.08057) | [PDF](https://arxiv.org/pdf/2212.08057.pdf) 
 
