@@ -1,5 +1,7 @@
 # Real-Time Neural Light Field on Mobile Devices
 
+# Demo Video of our implementation
+https://github.com/shounaknaik/MobileNeRF/assets/55713396/c489d5c8-5282-460f-be36-100fb58e9343
 
 This work is an extension of the following work named `MobileR2L`
 ### [Project](https://snap-research.github.io/MobileR2L/) | [ArXiv](https://arxiv.org/abs/2212.08057) | [PDF](https://arxiv.org/pdf/2212.08057.pdf) 
